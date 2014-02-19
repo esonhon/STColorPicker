@@ -54,6 +54,9 @@
     _pickerPopoverController.popoverContentSize = CGSizeMake(200.0, 180.0);
     _pickerPopoverController.backgroundColor = [UIColor blackColor];
     [_pickerPopoverController presentPopoverFromRect:CGRectMake(position.x, position.y, 10.0, 10.0) inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    
+    //select background color in the picker
+    [colorPicker selectColor:self.view.backgroundColor];
 }
 
 @end
