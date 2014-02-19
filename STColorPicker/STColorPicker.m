@@ -163,5 +163,57 @@
     return result;
 }
 
-
+- (BOOL)selectColor:(UIColor *)color {
+	CGPoint p = CGPointZero;
+    
+    CGImageRef image = _resizedImage.CGImage;
+    
+    CGContextRef context = [self createARGBBitmapContextFromImage:image];
+    
+    if (context == NULL)
+        return NO;
+    
+    size_t width = CGImageGetWidth(image);
+    size_t height = CGImageGetHeight(image);
+    CGRect rect = {{0, 0}, {width, height}};
+    
+    CGContextDrawImage(context, rect, image);
+    
+    unsigned char* data = CGBitmapContextGetData (context);
+    
+	//get RGB values of the color to select
+	const CGFloat* components = CGColorGetComponents(color.CGColor);
+	int img_alpha = CGColorGetAlpha(color.CGColor) * 255;
+	int img_red = components[0] * 255;
+	int img_green = components[1] * 255;
+	int img_blue = components[2] * 255;
+	
+    int offset;
+    BOOL found = NO;
+    
+	if (data != NULL) {
+		for(int w=0; w<width; w++) {
+			for(int h=0; h<height; h++) {
+				offset = 4*((width * round(h)) + round(w));
+ 				if(img_alpha == data[offset])
+					if(img_red == data[offset+1])
+						if(img_green == data[offset+2])
+							if(img_blue == data[offset+3]) {
+								p = CGPointMake(w,h);
+                                found = YES;
+								break; //stop the loop (h) if we found our color
+							}
+			}
+			if(found) break; //stop the loop (w) if we found our color
+		}
+	}
+    
+    if (data)
+        free(data);
+    
+	_glass.center = p;
+    _glass.color = color;
+    
+    return found;
+}
 @end
